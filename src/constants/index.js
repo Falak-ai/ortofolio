@@ -213,7 +213,7 @@ const projects = [
         color: "pink-text-gradient",
       },
       {
-        name: "mongodb",
+        name: "vite",
         color: "green-text-gradient",
       },
  
