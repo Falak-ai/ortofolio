@@ -61,105 +61,80 @@ const Computers = () => {
     }
 
     try {
-      let hasIssue = false;
+      // Sanitize the model by removing/replacing corrupted geometries
+      const sanitizedScene = computer.scene.clone();
+      let hasCorruptedGeometry = false;
       
-      // Deep validation of all geometry data
       computer.scene.traverse((child) => {
-        if (hasIssue) return; // Early exit if issue found
-        
         if (child.isMesh && child.geometry) {
           const geometry = child.geometry;
+          let geometryCorrupted = false;
           
           try {
             // Check position attributes for NaN/Infinity values
             const positions = geometry.attributes.position;
             if (positions?.array) {
-              // Check raw array data first
               for (let i = 0; i < positions.array.length; i++) {
                 if (!isFinite(positions.array[i])) {
-                  hasIssue = true;
+                  geometryCorrupted = true;
                   break;
-                }
-              }
-              
-              // Also check using accessor methods
-              if (!hasIssue) {
-                for (let i = 0; i < positions.count; i++) {
-                  const x = positions.getX(i);
-                  const y = positions.getY(i);
-                  const z = positions.getZ(i);
-                  if (!isFinite(x) || !isFinite(y) || !isFinite(z)) {
-                    hasIssue = true;
-                    break;
-                  }
                 }
               }
             }
             
-            // Check normal attributes for NaN/Infinity values
-            if (!hasIssue) {
+            if (!geometryCorrupted) {
               const normals = geometry.attributes.normal;
               if (normals?.array) {
                 for (let i = 0; i < normals.array.length; i++) {
                   if (!isFinite(normals.array[i])) {
-                    hasIssue = true;
+                    geometryCorrupted = true;
                     break;
                   }
                 }
               }
             }
             
-            // Check UV attributes for NaN/Infinity values
-            if (!hasIssue) {
+            if (!geometryCorrupted) {
               const uvs = geometry.attributes.uv;
               if (uvs?.array) {
                 for (let i = 0; i < uvs.array.length; i++) {
                   if (!isFinite(uvs.array[i])) {
-                    hasIssue = true;
+                    geometryCorrupted = true;
                     break;
                   }
                 }
               }
             }
-            
-            // Try to safely compute bounding sphere and box
-            if (!hasIssue) {
-              try {
-                // Test bounding sphere computation without modifying original
-                const testGeometry = geometry.clone();
-                testGeometry.computeBoundingSphere();
-                testGeometry.computeBoundingBox();
-                
-                // Check if computed values are valid
-                if (!testGeometry.boundingSphere || 
-                    !isFinite(testGeometry.boundingSphere.radius) ||
-                    testGeometry.boundingSphere.radius <= 0) {
-                  hasIssue = true;
-                }
-                
-                if (!hasIssue && testGeometry.boundingBox) {
-                  const box = testGeometry.boundingBox;
-                  if (!isFinite(box.min.x) || !isFinite(box.min.y) || !isFinite(box.min.z) ||
-                      !isFinite(box.max.x) || !isFinite(box.max.y) || !isFinite(box.max.z)) {
-                    hasIssue = true;
-                  }
-                }
-                
-                // Dispose of test geometry
-                testGeometry.dispose();
-              } catch (error) {
-                console.warn("Geometry computation failed:", error);
-                hasIssue = true;
+
+            // If geometry is corrupted, mark it for removal
+            if (geometryCorrupted) {
+              hasCorruptedGeometry = true;
+              // Find corresponding child in sanitized scene and remove it
+              const sanitizedChild = sanitizedScene.getObjectByProperty('uuid', child.uuid);
+              if (sanitizedChild && sanitizedChild.parent) {
+                sanitizedChild.parent.remove(sanitizedChild);
               }
             }
           } catch (error) {
             console.warn("Geometry validation failed:", error);
-            hasIssue = true;
+            geometryCorrupted = true;
+            hasCorruptedGeometry = true;
+            // Remove corrupted child from sanitized scene
+            const sanitizedChild = sanitizedScene.getObjectByProperty('uuid', child.uuid);
+            if (sanitizedChild && sanitizedChild.parent) {
+              sanitizedChild.parent.remove(sanitizedChild);
+            }
           }
         }
       });
       
-      setValidatedModel(hasIssue ? null : computer);
+      // If we found corrupted geometry, use sanitized scene, otherwise use original
+      if (hasCorruptedGeometry) {
+        console.warn("Corrupted geometry detected and removed from computer model");
+        setValidatedModel(sanitizedScene.children.length > 0 ? { scene: sanitizedScene } : null);
+      } else {
+        setValidatedModel(computer);
+      }
     } catch (error) {
       console.warn("Computer model validation failed:", error);
       setValidatedModel(null);
