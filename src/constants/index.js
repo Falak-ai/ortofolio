@@ -10,7 +10,7 @@ import {
   close,
   css,
   gearXpert,
-  project2,
+  leadcapture,
   project3,
   mysql,
   express,
@@ -236,7 +236,7 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: gearXpert,
+    image: leadcapture,
   },
   {
     name: "GoGroove-Ecommerce",
