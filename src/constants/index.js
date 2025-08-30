@@ -1,7 +1,6 @@
 
 import {
   logo,
-  backend,
   creator,
   mobile,
   web,
@@ -68,7 +67,7 @@ const services = [
   },
   {
     title: "Backend Developer",
-    icon: backend,
+    icon: "https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=1",
   },
   {
     title: "Ui UX Designer",
