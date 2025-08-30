@@ -20,6 +20,7 @@ import {
   gsap,
   framer,
   figma,
+  falakai_logo,
   git,
   html,
   javascript,
@@ -34,11 +35,6 @@ import {
   thirdTestimonial,
   n8ntemplates,
 } from '../assets'
-
-
-// Import Tekisky separately
-import tekisky from "../assets/company/tekisky.png";
-
 
 export const navLinks = [
 
@@ -157,7 +153,7 @@ const experiences = [
   {
     title: "Full-Stack Developer",
     company_name: "Tekisky",
-    icon: tekisky,
+    icon: falakai_logo,
     iconBg: "#383E56",
     date: "Jan 2023 - present",
     points: [

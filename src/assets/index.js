@@ -30,6 +30,7 @@ import firstTestimonial from './Tars Ken.webp';
 import secondTestimonial from './image.webp';
 import thirdTestimonial from './third testimonial.webp'
 import n8ntemplates from './n8ntemplates.png';
+import falakai_logo from './falakai_logo.png';
 
 export {
   logo,
@@ -54,6 +55,7 @@ export {
   gsap,
   framer,
   n8ntemplates,
+  falakai_logo,
   figma,
   git,
   html,
