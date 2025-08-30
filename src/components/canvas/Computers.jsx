@@ -5,7 +5,41 @@ import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 import CanvasLoader from "../Loader";
 
 const Computers = () => {
-  const computer = useGLTF("./desktop_pc/scene.gltf");
+  const [modelError, setModelError] = useState(false);
+  let computer;
+  
+  try {
+    computer = useGLTF("./desktop_pc/scene.gltf");
+    
+    // Check for NaN values in geometry
+    if (computer.scene) {
+      computer.scene.traverse((child) => {
+        if (child.isMesh && child.geometry) {
+          const positions = child.geometry.attributes.position;
+          if (positions && positions.array) {
+            for (let i = 0; i < positions.array.length; i++) {
+              if (isNaN(positions.array[i])) {
+                setModelError(true);
+                return;
+              }
+            }
+          }
+        }
+      });
+    }
+  } catch (error) {
+    console.warn("Failed to load 3D model:", error);
+    setModelError(true);
+  }
+
+  if (modelError) {
+    return (
+      <mesh>
+        <boxGeometry args={[2, 2, 2]} />
+        <meshStandardMaterial color="#915EFF" />
+      </mesh>
+    );
+  }
 
   return (
     <mesh>
@@ -19,12 +53,14 @@ const Computers = () => {
         shadow-mapSize={1024}
       />
       <pointLight intensity={1} />
-      <primitive
-        object={computer.scene}
-        scale={0.75} // Keep scale normal for desktop
-        position={[0, -3.25, -1.5]}
-        rotation={[-0.01, -0.2, -0.1]}
-      />
+      {computer && (
+        <primitive
+          object={computer.scene}
+          scale={0.75}
+          position={[0, -3.25, -1.5]}
+          rotation={[-0.01, -0.2, -0.1]}
+        />
+      )}
     </mesh>
   );
 };
