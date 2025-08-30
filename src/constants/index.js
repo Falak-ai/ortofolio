@@ -236,8 +236,6 @@ const projects = [
         color: "pink-text-gradient",
       },
     ],
-    image: gearXpert,
-    source_code_link: "https://github.com/",
   },
   {
     name: "GoGroove-Ecommerce",
