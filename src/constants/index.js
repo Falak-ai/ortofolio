@@ -219,7 +219,7 @@ const projects = [
     source_code_link: "https://crmsai.com",
   },
   {
-    name: "GearXpert",
+    name: "",
     description:
       "GearXpert is your ultimate destination for premium auto parts and accessories, Whether you're an automobile enthusiast or a professional, find everything you need to upgrade, repair.",
     tags: [
@@ -232,7 +232,7 @@ const projects = [
         color: "green-text-gradient",
       },
       {
-        name: "",
+        name: "Gsap",
         color: "pink-text-gradient",
       },
     ],
