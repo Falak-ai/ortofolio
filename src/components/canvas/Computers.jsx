@@ -1,8 +1,21 @@
 import React, { Suspense, useEffect, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
 import CanvasLoader from "../Loader";
+
+const OrbitControlsWrapper = () => {
+  const { gl } = useThree();
+  
+  return (
+    <OrbitControls
+      domElement={gl.domElement}
+      enableZoom={false}
+      maxPolarAngle={Math.PI / 2}
+      minPolarAngle={Math.PI / 2}
+    />
+  );
+};
 
 const Computers = () => {
   const [modelError, setModelError] = useState(false);
@@ -10,29 +23,36 @@ const Computers = () => {
   
   try {
     computer = useGLTF("./desktop_pc/scene.gltf");
-    
-    // Check for NaN values in geometry
-    if (computer.scene) {
+  } catch (error) {
+    console.warn("Failed to load 3D model:", error);
+  }
+
+  useEffect(() => {
+    if (computer && computer.scene && !modelError) {
+      let hasNaN = false;
+      
       computer.scene.traverse((child) => {
         if (child.isMesh && child.geometry) {
           const positions = child.geometry.attributes.position;
           if (positions && positions.array) {
             for (let i = 0; i < positions.array.length; i++) {
               if (isNaN(positions.array[i])) {
-                setModelError(true);
-                return;
+                hasNaN = true;
+                break;
               }
             }
           }
         }
+        if (hasNaN) return;
       });
+      
+      if (hasNaN) {
+        setModelError(true);
+      }
     }
-  } catch (error) {
-    console.warn("Failed to load 3D model:", error);
-    setModelError(true);
-  }
+  }, [computer, modelError]);
 
-  if (modelError) {
+  if (modelError || !computer) {
     return (
       <mesh>
         <boxGeometry args={[2, 2, 2]} />
@@ -53,14 +73,12 @@ const Computers = () => {
         shadow-mapSize={1024}
       />
       <pointLight intensity={1} />
-      {computer && (
-        <primitive
-          object={computer.scene}
-          scale={0.75}
-          position={[0, -3.25, -1.5]}
-          rotation={[-0.01, -0.2, -0.1]}
-        />
-      )}
+      <primitive
+        object={computer.scene}
+        scale={0.75}
+        position={[0, -3.25, -1.5]}
+        rotation={[-0.01, -0.2, -0.1]}
+      />
     </mesh>
   );
 };
@@ -92,11 +110,7 @@ const ComputersCanvas = () => {
         gl={{ preserveDrawingBuffer: true }}
       >
         <Suspense fallback={<CanvasLoader />}>
-          <OrbitControls
-            enableZoom={false}
-            maxPolarAngle={Math.PI / 2}
-            minPolarAngle={Math.PI / 2}
-          />
+          <OrbitControlsWrapper />
           <Computers />
         </Suspense>
         <Preload all />
