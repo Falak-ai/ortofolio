@@ -87,8 +87,7 @@ const Earth = () => {
       // If we found corrupted geometry, use sanitized scene, otherwise use original
       if (hasCorruptedGeometry) {
         console.warn("Corrupted geometry detected and removed from earth model");
-        // If any corrupted geometry is found, discard the entire model to prevent NaN errors
-        setValidatedModel(null);
+        setValidatedModel(sanitizedScene.children.length > 0 ? sanitizedScene : null);
       } else {
         setValidatedModel(earth.scene);
       }

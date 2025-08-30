@@ -1,3 +1,4 @@
+import logo from "./logo.png";
 import creator from "./creator.png";
 import mobile from "./mobile.png";
 import web from "./web.png";
@@ -31,6 +32,7 @@ import thirdTestimonial from './third testimonial.webp'
 import n8ntemplates from './n8ntemplates.png';
 
 export {
+  logo,
   creator,
   mobile,
   web,

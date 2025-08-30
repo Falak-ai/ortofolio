@@ -1,5 +1,6 @@
 
 import {
+  logo,
   creator,
   mobile,
   web,
@@ -155,8 +156,10 @@ const technologies = [
 const experiences = [
   {
     title: "Full-Stack Developer",
+    company_name: "Tekisky",
+    icon: tekisky,
     iconBg: "#383E56",
-    date: "August 2023 - present",
+    date: "Jan 2023 - present",
     points: [
       "Developing and maintaining web applications.",
       "Implementing responsive design and ensuring cross-browser compatibility.",
