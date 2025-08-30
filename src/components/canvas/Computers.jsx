@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState, useMemo } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
@@ -49,91 +49,102 @@ const OrbitControlsWrapper = () => {
 };
 
 const Computers = () => {
-  let computer;
-  
-  try {
-    computer = useGLTF("./desktop_pc/scene.gltf");
-  } catch (error) {
-    console.warn("Failed to load 3D model:", error);
-  }
+  const computer = useGLTF("./desktop_pc/scene.gltf");
+  const [validatedModel, setValidatedModel] = useState(null);
+  const [isValidating, setIsValidating] = useState(true);
 
-  const validatedModel = useMemo(() => {
+  useEffect(() => {
     if (!computer || !computer.scene) {
-      return null;
+      setValidatedModel(null);
+      setIsValidating(false);
+      return;
     }
 
     let hasIssue = false;
     
-    // Deep validation of all geometry data
-    computer.scene.traverse((child) => {
-      if (child.isMesh && child.geometry) {
-        const geometry = child.geometry;
-        
-        // Check position attributes for NaN values
-        const positions = geometry.attributes.position;
-        if (positions && positions.array) {
-          for (let i = 0; i < positions.array.length; i++) {
-            if (!isFinite(positions.array[i])) {
-              hasIssue = true;
-              break;
-            }
-          }
-        }
-        
-        // Check normal attributes for NaN values
-        const normals = geometry.attributes.normal;
-        if (normals && normals.array) {
-          for (let i = 0; i < normals.array.length; i++) {
-            if (!isFinite(normals.array[i])) {
-              hasIssue = true;
-              break;
-            }
-          }
-        }
-        
-        // Check UV attributes for NaN values
-        const uvs = geometry.attributes.uv;
-        if (uvs && uvs.array) {
-          for (let i = 0; i < uvs.array.length; i++) {
-            if (!isFinite(uvs.array[i])) {
-              hasIssue = true;
-              break;
-            }
-          }
-        }
-        
-        // Try to safely compute bounding sphere and box
-        try {
-          // Create a copy to avoid modifying the original
-          const testGeometry = geometry.clone();
-          testGeometry.computeBoundingSphere();
-          testGeometry.computeBoundingBox();
+    try {
+      // Deep validation of all geometry data
+      computer.scene.traverse((child) => {
+        if (child.isMesh && child.geometry) {
+          const geometry = child.geometry;
           
-          // Check if computed values are valid
-          if (testGeometry.boundingSphere && !isFinite(testGeometry.boundingSphere.radius)) {
-            hasIssue = true;
-          }
-          
-          if (testGeometry.boundingBox) {
-            const box = testGeometry.boundingBox;
-            if (!isFinite(box.min.x) || !isFinite(box.min.y) || !isFinite(box.min.z) ||
-                !isFinite(box.max.x) || !isFinite(box.max.y) || !isFinite(box.max.z)) {
-              hasIssue = true;
+          // Check position attributes for NaN values
+          const positions = geometry.attributes.position;
+          if (positions && positions.array) {
+            for (let i = 0; i < positions.array.length; i++) {
+              if (!isFinite(positions.array[i])) {
+                hasIssue = true;
+                break;
+              }
             }
           }
           
-          // Dispose of test geometry
-          testGeometry.dispose();
-        } catch (error) {
-          console.warn("Geometry computation failed:", error);
-          hasIssue = true;
+          // Check normal attributes for NaN values
+          const normals = geometry.attributes.normal;
+          if (normals && normals.array) {
+            for (let i = 0; i < normals.array.length; i++) {
+              if (!isFinite(normals.array[i])) {
+                hasIssue = true;
+                break;
+              }
+            }
+          }
+          
+          // Check UV attributes for NaN values
+          const uvs = geometry.attributes.uv;
+          if (uvs && uvs.array) {
+            for (let i = 0; i < uvs.array.length; i++) {
+              if (!isFinite(uvs.array[i])) {
+                hasIssue = true;
+                break;
+              }
+            }
+          }
+          
+          // Try to safely compute bounding sphere and box
+          if (!hasIssue) {
+            try {
+              // Create a copy to avoid modifying the original
+              const testGeometry = geometry.clone();
+              testGeometry.computeBoundingSphere();
+              testGeometry.computeBoundingBox();
+              
+              // Check if computed values are valid
+              if (testGeometry.boundingSphere && !isFinite(testGeometry.boundingSphere.radius)) {
+                hasIssue = true;
+              }
+              
+              if (testGeometry.boundingBox) {
+                const box = testGeometry.boundingBox;
+                if (!isFinite(box.min.x) || !isFinite(box.min.y) || !isFinite(box.min.z) ||
+                    !isFinite(box.max.x) || !isFinite(box.max.y) || !isFinite(box.max.z)) {
+                  hasIssue = true;
+                }
+              }
+              
+              // Dispose of test geometry
+              testGeometry.dispose();
+            } catch (error) {
+              console.warn("Geometry computation failed:", error);
+              hasIssue = true;
+            }
+          }
         }
-      }
-      if (hasIssue) return;
-    });
+        if (hasIssue) return;
+      });
+      
+      setValidatedModel(hasIssue ? null : computer);
+    } catch (error) {
+      console.warn("Model validation failed:", error);
+      setValidatedModel(null);
+    }
     
-    return hasIssue ? null : computer;
+    setIsValidating(false);
   }, [computer]);
+
+  if (isValidating) {
+    return <CanvasLoader />;
+  }
 
   if (!validatedModel) {
     return (

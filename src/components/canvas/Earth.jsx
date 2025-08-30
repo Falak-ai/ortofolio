@@ -1,4 +1,4 @@
-import React, { Suspense, useMemo } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
@@ -6,12 +6,19 @@ import CanvasLoader from "../Loader";
 
 const Earth = () => {
   const earth = useGLTF("./planet/scene.gltf");
+  const [validatedModel, setValidatedModel] = useState(null);
+  const [isValidating, setIsValidating] = useState(true);
 
-  // Validate geometry for NaN values
-  const validatedModel = useMemo(() => {
-    if (!earth.scene) return null;
+  useEffect(() => {
+    if (!earth.scene) {
+      setValidatedModel(null);
+      setIsValidating(false);
+      return;
+    }
 
     try {
+      let hasIssue = false;
+      
       // Traverse the scene and check all geometries
       earth.scene.traverse((child) => {
         if (child.isMesh && child.geometry) {
@@ -22,7 +29,8 @@ const Earth = () => {
             const positions = geometry.attributes.position.array;
             for (let i = 0; i < positions.length; i++) {
               if (!isFinite(positions[i])) {
-                throw new Error('NaN or Infinity found in position data');
+                hasIssue = true;
+                break;
               }
             }
           }
@@ -32,7 +40,8 @@ const Earth = () => {
             const normals = geometry.attributes.normal.array;
             for (let i = 0; i < normals.length; i++) {
               if (!isFinite(normals[i])) {
-                throw new Error('NaN or Infinity found in normal data');
+                hasIssue = true;
+                break;
               }
             }
           }
@@ -42,32 +51,47 @@ const Earth = () => {
             const uvs = geometry.attributes.uv.array;
             for (let i = 0; i < uvs.length; i++) {
               if (!isFinite(uvs[i])) {
-                throw new Error('NaN or Infinity found in UV data');
+                hasIssue = true;
+                break;
               }
             }
           }
 
           // Test bounding sphere and box calculations
-          const testGeometry = geometry.clone();
-          testGeometry.computeBoundingSphere();
-          testGeometry.computeBoundingBox();
-          
-          if (!isFinite(testGeometry.boundingSphere.radius) ||
-              !isFinite(testGeometry.boundingBox.min.x) ||
-              !isFinite(testGeometry.boundingBox.max.x)) {
-            throw new Error('Invalid bounding calculations');
+          if (!hasIssue) {
+            try {
+              const testGeometry = geometry.clone();
+              testGeometry.computeBoundingSphere();
+              testGeometry.computeBoundingBox();
+              
+              if (!isFinite(testGeometry.boundingSphere.radius) ||
+                  !isFinite(testGeometry.boundingBox.min.x) ||
+                  !isFinite(testGeometry.boundingBox.max.x)) {
+                hasIssue = true;
+              }
+              
+              testGeometry.dispose();
+            } catch (error) {
+              console.warn('Earth geometry computation failed:', error);
+              hasIssue = true;
+            }
           }
-          
-          testGeometry.dispose();
         }
+        if (hasIssue) return;
       });
 
-      return earth.scene;
+      setValidatedModel(hasIssue ? null : earth.scene);
     } catch (error) {
       console.warn('Earth model validation failed:', error.message);
-      return null;
+      setValidatedModel(null);
     }
+    
+    setIsValidating(false);
   }, [earth.scene]);
+
+  if (isValidating) {
+    return <CanvasLoader />;
+  }
 
   // Render fallback sphere if model is corrupted
   if (!validatedModel) {
