@@ -232,7 +232,7 @@ const projects = [
         color: "green-text-gradient",
       },
       {
-        name: "Gsap",
+        name: "",
         color: "pink-text-gradient",
       },
     ],
