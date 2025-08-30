@@ -10,7 +10,7 @@ const Earth = () => {
   const [isValidating, setIsValidating] = useState(true);
 
   useEffect(() => {
-    if (!earth.scene) {
+    if (!earth?.scene) {
       setValidatedModel(null);
       setIsValidating(false);
       return;
@@ -21,73 +21,105 @@ const Earth = () => {
       
       // Traverse the scene and check all geometries
       earth.scene.traverse((child) => {
+        if (hasIssue) return; // Early exit if issue found
+        
         if (child.isMesh && child.geometry) {
           const geometry = child.geometry;
           
-          // Check position attribute
-          if (geometry.attributes.position) {
+          try {
+            // Check position attribute
             const positions = geometry.attributes.position;
-            for (let i = 0; i < positions.count; i++) {
-              if (!isFinite(positions.getX(i)) || !isFinite(positions.getY(i)) || !isFinite(positions.getZ(i))) {
-                hasIssue = true;
-                break;
-              }
-            }
-          }
-
-          // Check normal attribute
-          if (geometry.attributes.normal) {
-            const normals = geometry.attributes.normal;
-            for (let i = 0; i < normals.count; i++) {
-              if (!isFinite(normals.getX(i)) || !isFinite(normals.getY(i)) || !isFinite(normals.getZ(i))) {
-                hasIssue = true;
-                break;
-              }
-            }
-          }
-
-          // Check UV attribute
-          if (geometry.attributes.uv) {
-            const uvs = geometry.attributes.uv;
-            for (let i = 0; i < uvs.count; i++) {
-              if (!isFinite(uvs.getX(i)) || !isFinite(uvs.getY(i))) {
-                hasIssue = true;
-                break;
-              }
-            }
-          }
-
-          // Test bounding sphere and box calculations
-          if (!hasIssue) {
-            try {
-              const testGeometry = geometry.clone();
-              testGeometry.computeBoundingSphere();
-              testGeometry.computeBoundingBox();
-              
-              if (!isFinite(testGeometry.boundingSphere.radius) ||
-                  !isFinite(testGeometry.boundingBox.min.x) ||
-                  !isFinite(testGeometry.boundingBox.max.x)) {
-                hasIssue = true;
+            if (positions?.array) {
+              // Check raw array data first
+              for (let i = 0; i < positions.array.length; i++) {
+                if (!isFinite(positions.array[i])) {
+                  hasIssue = true;
+                  break;
+                }
               }
               
-              testGeometry.dispose();
-            } catch (error) {
-              console.warn('Earth geometry computation failed:', error);
-              hasIssue = true;
+              // Also check using accessor methods
+              if (!hasIssue) {
+                for (let i = 0; i < positions.count; i++) {
+                  const x = positions.getX(i);
+                  const y = positions.getY(i);
+                  const z = positions.getZ(i);
+                  if (!isFinite(x) || !isFinite(y) || !isFinite(z)) {
+                    hasIssue = true;
+                    break;
+                  }
+                }
+              }
             }
+
+            // Check normal attribute
+            if (!hasIssue) {
+              const normals = geometry.attributes.normal;
+              if (normals?.array) {
+                for (let i = 0; i < normals.array.length; i++) {
+                  if (!isFinite(normals.array[i])) {
+                    hasIssue = true;
+                    break;
+                  }
+                }
+              }
+            }
+
+            // Check UV attribute
+            if (!hasIssue) {
+              const uvs = geometry.attributes.uv;
+              if (uvs?.array) {
+                for (let i = 0; i < uvs.array.length; i++) {
+                  if (!isFinite(uvs.array[i])) {
+                    hasIssue = true;
+                    break;
+                  }
+                }
+              }
+            }
+
+            // Test bounding sphere and box calculations
+            if (!hasIssue) {
+              try {
+                const testGeometry = geometry.clone();
+                testGeometry.computeBoundingSphere();
+                testGeometry.computeBoundingBox();
+                
+                if (!testGeometry.boundingSphere || 
+                    !isFinite(testGeometry.boundingSphere.radius) ||
+                    testGeometry.boundingSphere.radius <= 0) {
+                  hasIssue = true;
+                }
+                
+                if (!hasIssue && testGeometry.boundingBox) {
+                  const box = testGeometry.boundingBox;
+                  if (!isFinite(box.min.x) || !isFinite(box.min.y) || !isFinite(box.min.z) ||
+                      !isFinite(box.max.x) || !isFinite(box.max.y) || !isFinite(box.max.z)) {
+                    hasIssue = true;
+                  }
+                }
+                
+                testGeometry.dispose();
+              } catch (error) {
+                console.warn('Earth geometry computation failed:', error);
+                hasIssue = true;
+              }
+            }
+          } catch (error) {
+            console.warn("Earth geometry validation failed:", error);
+            hasIssue = true;
           }
         }
-        if (hasIssue) return;
       });
 
       setValidatedModel(hasIssue ? null : earth.scene);
     } catch (error) {
-      console.warn('Earth model validation failed:', error.message);
+      console.warn('Earth model validation failed:', error);
       setValidatedModel(null);
     }
     
     setIsValidating(false);
-  }, [earth.scene]);
+  }, [earth?.scene]);
 
   if (isValidating) {
     return <CanvasLoader />;

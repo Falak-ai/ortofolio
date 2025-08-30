@@ -54,88 +54,114 @@ const Computers = () => {
   const [isValidating, setIsValidating] = useState(true);
 
   useEffect(() => {
-    if (!computer || !computer.scene) {
+    if (!computer?.scene) {
       setValidatedModel(null);
       setIsValidating(false);
       return;
     }
 
-    let hasIssue = false;
-    
     try {
+      let hasIssue = false;
+      
       // Deep validation of all geometry data
       computer.scene.traverse((child) => {
+        if (hasIssue) return; // Early exit if issue found
+        
         if (child.isMesh && child.geometry) {
           const geometry = child.geometry;
           
-          // Check position attributes for NaN values
-          const positions = geometry.attributes.position;
-          if (positions && positions.array) {
-            for (let i = 0; i < positions.count; i++) {
-              if (!isFinite(positions.getX(i)) || !isFinite(positions.getY(i)) || !isFinite(positions.getZ(i))) {
-                hasIssue = true;
-                break;
-              }
-            }
-          }
-          
-          // Check normal attributes for NaN values
-          const normals = geometry.attributes.normal;
-          if (normals && normals.array) {
-            for (let i = 0; i < normals.count; i++) {
-              if (!isFinite(normals.getX(i)) || !isFinite(normals.getY(i)) || !isFinite(normals.getZ(i))) {
-                hasIssue = true;
-                break;
-              }
-            }
-          }
-          
-          // Check UV attributes for NaN values
-          const uvs = geometry.attributes.uv;
-          if (uvs && uvs.array) {
-            for (let i = 0; i < uvs.count; i++) {
-              if (!isFinite(uvs.getX(i)) || !isFinite(uvs.getY(i))) {
-                hasIssue = true;
-                break;
-              }
-            }
-          }
-          
-          // Try to safely compute bounding sphere and box
-          if (!hasIssue) {
-            try {
-              // Create a copy to avoid modifying the original
-              const testGeometry = geometry.clone();
-              testGeometry.computeBoundingSphere();
-              testGeometry.computeBoundingBox();
-              
-              // Check if computed values are valid
-              if (testGeometry.boundingSphere && !isFinite(testGeometry.boundingSphere.radius)) {
-                hasIssue = true;
-              }
-              
-              if (testGeometry.boundingBox) {
-                const box = testGeometry.boundingBox;
-                if (!isFinite(box.min.x) || !isFinite(box.min.y) || !isFinite(box.min.z) ||
-                    !isFinite(box.max.x) || !isFinite(box.max.y) || !isFinite(box.max.z)) {
+          try {
+            // Check position attributes for NaN/Infinity values
+            const positions = geometry.attributes.position;
+            if (positions?.array) {
+              // Check raw array data first
+              for (let i = 0; i < positions.array.length; i++) {
+                if (!isFinite(positions.array[i])) {
                   hasIssue = true;
+                  break;
                 }
               }
               
-              // Dispose of test geometry
-              testGeometry.dispose();
-            } catch (error) {
-              console.warn("Geometry computation failed:", error);
-              hasIssue = true;
+              // Also check using accessor methods
+              if (!hasIssue) {
+                for (let i = 0; i < positions.count; i++) {
+                  const x = positions.getX(i);
+                  const y = positions.getY(i);
+                  const z = positions.getZ(i);
+                  if (!isFinite(x) || !isFinite(y) || !isFinite(z)) {
+                    hasIssue = true;
+                    break;
+                  }
+                }
+              }
             }
+            
+            // Check normal attributes for NaN/Infinity values
+            if (!hasIssue) {
+              const normals = geometry.attributes.normal;
+              if (normals?.array) {
+                for (let i = 0; i < normals.array.length; i++) {
+                  if (!isFinite(normals.array[i])) {
+                    hasIssue = true;
+                    break;
+                  }
+                }
+              }
+            }
+            
+            // Check UV attributes for NaN/Infinity values
+            if (!hasIssue) {
+              const uvs = geometry.attributes.uv;
+              if (uvs?.array) {
+                for (let i = 0; i < uvs.array.length; i++) {
+                  if (!isFinite(uvs.array[i])) {
+                    hasIssue = true;
+                    break;
+                  }
+                }
+              }
+            }
+            
+            // Try to safely compute bounding sphere and box
+            if (!hasIssue) {
+              try {
+                // Test bounding sphere computation without modifying original
+                const testGeometry = geometry.clone();
+                testGeometry.computeBoundingSphere();
+                testGeometry.computeBoundingBox();
+                
+                // Check if computed values are valid
+                if (!testGeometry.boundingSphere || 
+                    !isFinite(testGeometry.boundingSphere.radius) ||
+                    testGeometry.boundingSphere.radius <= 0) {
+                  hasIssue = true;
+                }
+                
+                if (!hasIssue && testGeometry.boundingBox) {
+                  const box = testGeometry.boundingBox;
+                  if (!isFinite(box.min.x) || !isFinite(box.min.y) || !isFinite(box.min.z) ||
+                      !isFinite(box.max.x) || !isFinite(box.max.y) || !isFinite(box.max.z)) {
+                    hasIssue = true;
+                  }
+                }
+                
+                // Dispose of test geometry
+                testGeometry.dispose();
+              } catch (error) {
+                console.warn("Geometry computation failed:", error);
+                hasIssue = true;
+              }
+            }
+          } catch (error) {
+            console.warn("Geometry validation failed:", error);
+            hasIssue = true;
           }
         }
-        if (hasIssue) return;
       });
       
       setValidatedModel(hasIssue ? null : computer);
     } catch (error) {
-      console.warn("Model validation failed:", error);
+      console.warn("Computer model validation failed:", error);
       setValidatedModel(null);
     }
     
