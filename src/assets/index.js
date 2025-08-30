@@ -29,6 +29,7 @@ import threejs from "./tech/threejs.svg";
 import firstTestimonial from './Tars Ken.webp';
 import secondTestimonial from './image.webp';
 import thirdTestimonial from './third testimonial.webp'
+import n8ntemplates from './n8ntemplates.png';
 
 export {
   logo,
@@ -52,6 +53,7 @@ export {
   thirdTestimonial,
   gsap,
   framer,
+  n8ntemplates,
   figma,
   git,
   html,

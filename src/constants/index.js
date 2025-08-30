@@ -32,6 +32,7 @@ import {
   firstTestimonial,
   secondTestimonial,
   thirdTestimonial,
+  n8ntemplates,
 } from '../assets'
 
 
@@ -218,7 +219,7 @@ const projects = [
       },
  
     ],
-    image: project2,
+    image: n8ntemplates,
     source_code_link: "https://github.com/",
   },
   {
