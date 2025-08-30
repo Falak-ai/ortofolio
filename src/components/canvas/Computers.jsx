@@ -31,7 +31,7 @@ const Computers = () => {
       return null;
     }
 
-    let hasNaN = false;
+    let hasIssue = false;
     
     computer.scene.traverse((child) => {
       if (child.isMesh && child.geometry) {
@@ -39,16 +39,38 @@ const Computers = () => {
         if (positions && positions.array) {
           for (let i = 0; i < positions.array.length; i++) {
             if (isNaN(positions.array[i])) {
-              hasNaN = true;
+              hasIssue = true;
               break;
             }
           }
         }
+        
+        // Explicitly compute bounding sphere and box to catch corruption
+        try {
+          child.geometry.computeBoundingSphere();
+          child.geometry.computeBoundingBox();
+          
+          // Check if computed values are valid
+          if (child.geometry.boundingSphere && isNaN(child.geometry.boundingSphere.radius)) {
+            hasIssue = true;
+          }
+          
+          if (child.geometry.boundingBox) {
+            const box = child.geometry.boundingBox;
+            if (isNaN(box.min.x) || isNaN(box.min.y) || isNaN(box.min.z) ||
+                isNaN(box.max.x) || isNaN(box.max.y) || isNaN(box.max.z)) {
+              hasIssue = true;
+            }
+          }
+        } catch (error) {
+          console.warn("Geometry computation failed:", error);
+          hasIssue = true;
+        }
       }
-      if (hasNaN) return;
+      if (hasIssue) return;
     });
     
-    return hasNaN ? null : computer;
+    return hasIssue ? null : computer;
   }, [computer]);
 
   if (!validatedModel) {
