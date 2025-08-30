@@ -196,9 +196,9 @@ const testimonials = [
 
 const projects = [
   {
-    name: "Tekisky Mart",
+    name: "N8n templates",
     description:
-      "Tekisky Mart is a web-based platform that allows users to search, explore, and purchase a wide range of products from various providers, offering a seamless and efficient shopping experience.",
+      "N8n templates is a web-based platform that allows users to search, explore, and purchase a wide range of products from various providers, offering a seamless and efficient shopping experience.",
     tags: [
       {
         name: "react",
