@@ -1,5 +1,4 @@
 import logo from "./logo.png";
-import creator from "./creator.png";
 import mobile from "./mobile.png";
 import web from "./web.png";
 import github from "./github.png";
@@ -31,7 +30,6 @@ import thirdTestimonial from './third testimonial.webp'
 
 export {
   logo,
-  creator,
   mobile,
   web,
   github,
