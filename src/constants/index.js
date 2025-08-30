@@ -196,9 +196,9 @@ const testimonials = [
 
 const projects = [
   {
-    name: "N8n templates",
+    name: "N8n Templates",
     description:
-      "N8n templates is a web-based platform that allows users to search, explore, and purchase n8n templates from various providers, offering a seamless and efficient shopping experience.",
+      "N8n Templates is a web-based platform that allows users to search, explore, and purchase n8n templates from various providers, offering a seamless and efficient shopping experience.",
     tags: [
       {
         name: "react",
