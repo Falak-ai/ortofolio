@@ -26,9 +26,9 @@ const Earth = () => {
           
           // Check position attribute
           if (geometry.attributes.position) {
-            const positions = geometry.attributes.position.array;
-            for (let i = 0; i < positions.length; i++) {
-              if (!isFinite(positions[i])) {
+            const positions = geometry.attributes.position;
+            for (let i = 0; i < positions.count; i++) {
+              if (!isFinite(positions.getX(i)) || !isFinite(positions.getY(i)) || !isFinite(positions.getZ(i))) {
                 hasIssue = true;
                 break;
               }
@@ -37,9 +37,9 @@ const Earth = () => {
 
           // Check normal attribute
           if (geometry.attributes.normal) {
-            const normals = geometry.attributes.normal.array;
-            for (let i = 0; i < normals.length; i++) {
-              if (!isFinite(normals[i])) {
+            const normals = geometry.attributes.normal;
+            for (let i = 0; i < normals.count; i++) {
+              if (!isFinite(normals.getX(i)) || !isFinite(normals.getY(i)) || !isFinite(normals.getZ(i))) {
                 hasIssue = true;
                 break;
               }
@@ -48,9 +48,9 @@ const Earth = () => {
 
           // Check UV attribute
           if (geometry.attributes.uv) {
-            const uvs = geometry.attributes.uv.array;
-            for (let i = 0; i < uvs.length; i++) {
-              if (!isFinite(uvs[i])) {
+            const uvs = geometry.attributes.uv;
+            for (let i = 0; i < uvs.count; i++) {
+              if (!isFinite(uvs.getX(i)) || !isFinite(uvs.getY(i))) {
                 hasIssue = true;
                 break;
               }

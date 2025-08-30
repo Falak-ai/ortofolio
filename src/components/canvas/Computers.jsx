@@ -71,8 +71,8 @@ const Computers = () => {
           // Check position attributes for NaN values
           const positions = geometry.attributes.position;
           if (positions && positions.array) {
-            for (let i = 0; i < positions.array.length; i++) {
-              if (!isFinite(positions.array[i])) {
+            for (let i = 0; i < positions.count; i++) {
+              if (!isFinite(positions.getX(i)) || !isFinite(positions.getY(i)) || !isFinite(positions.getZ(i))) {
                 hasIssue = true;
                 break;
               }
@@ -82,8 +82,8 @@ const Computers = () => {
           // Check normal attributes for NaN values
           const normals = geometry.attributes.normal;
           if (normals && normals.array) {
-            for (let i = 0; i < normals.array.length; i++) {
-              if (!isFinite(normals.array[i])) {
+            for (let i = 0; i < normals.count; i++) {
+              if (!isFinite(normals.getX(i)) || !isFinite(normals.getY(i)) || !isFinite(normals.getZ(i))) {
                 hasIssue = true;
                 break;
               }
@@ -93,8 +93,8 @@ const Computers = () => {
           // Check UV attributes for NaN values
           const uvs = geometry.attributes.uv;
           if (uvs && uvs.array) {
-            for (let i = 0; i < uvs.array.length; i++) {
-              if (!isFinite(uvs.array[i])) {
+            for (let i = 0; i < uvs.count; i++) {
+              if (!isFinite(uvs.getX(i)) || !isFinite(uvs.getY(i))) {
                 hasIssue = true;
                 break;
               }
