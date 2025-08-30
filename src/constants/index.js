@@ -159,7 +159,7 @@ const experiences = [
     company_name: "Tekisky",
     icon: tekisky,
     iconBg: "#383E56",
-    date: "Jan 2023 - present",
+    date: "August 2023 - present",
     points: [
       "Developing and maintaining web applications.",
       "Implementing responsive design and ensuring cross-browser compatibility.",
