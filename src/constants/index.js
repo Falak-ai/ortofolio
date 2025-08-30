@@ -152,7 +152,7 @@ const technologies = [
 const experiences = [
   {
     title: "Full-Stack Developer",
-    company_name: "Tekisky",
+    company_name: "FalakAI",
     icon: falakai_logo,
     iconBg: "#383E56",
     date: "Jan 2023 - present",
