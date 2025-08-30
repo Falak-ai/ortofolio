@@ -156,7 +156,6 @@ const technologies = [
 const experiences = [
   {
     title: "Full-Stack Developer",
-    company_name: "Tekisky",
     iconBg: "#383E56",
     date: "August 2023 - present",
     points: [
