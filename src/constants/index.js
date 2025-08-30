@@ -220,7 +220,7 @@ const projects = [
  
     ],
     image: n8ntemplates,
-    source_code_link: "https://github.com/",
+    source_code_link: "https://crmsai.com",
   },
   {
     name: "GearXpert",
