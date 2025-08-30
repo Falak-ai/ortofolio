@@ -4,6 +4,7 @@ import {
   creator,
   mobile,
   web,
+  backend,
   github,
   menu,
   close,
@@ -71,7 +72,7 @@ const services = [
   },
   {
     title: "Ui UX Designer",
-    icon: "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&dpr=1",
+    icon: backend,
   },
 ];
 

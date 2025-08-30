@@ -5,6 +5,7 @@ import web from "./web.png";
 import github from "./github.png";
 import menu from "./menu.svg";
 import close from "./close.svg";
+import backend from "./backend.png";
 import gsap from './tech/gsap.png'
 import framer from './tech/framer.png';
 import css from "./tech/css.png";
@@ -34,6 +35,7 @@ export {
   creator,
   mobile,
   web,
+  backend,
   github,
   menu,
   close,
