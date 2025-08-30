@@ -157,7 +157,6 @@ const experiences = [
   {
     title: "Full-Stack Developer",
     company_name: "Tekisky",
-    icon: ,
     iconBg: "#383E56",
     date: "August 2023 - present",
     points: [
