@@ -1,6 +1,5 @@
 
 import {
-  logo,
   creator,
   mobile,
   web,
