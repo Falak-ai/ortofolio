@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState, useMemo } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
 
@@ -18,7 +18,6 @@ const OrbitControlsWrapper = () => {
 };
 
 const Computers = () => {
-  const [modelError, setModelError] = useState(false);
   let computer;
   
   try {
@@ -27,34 +26,44 @@ const Computers = () => {
     console.warn("Failed to load 3D model:", error);
   }
 
-  useEffect(() => {
-    if (computer && computer.scene && !modelError) {
-      let hasNaN = false;
-      
-      computer.scene.traverse((child) => {
-        if (child.isMesh && child.geometry) {
-          const positions = child.geometry.attributes.position;
-          if (positions && positions.array) {
-            for (let i = 0; i < positions.array.length; i++) {
-              if (isNaN(positions.array[i])) {
-                hasNaN = true;
-                break;
-              }
+  const validatedModel = useMemo(() => {
+    if (!computer || !computer.scene) {
+      return null;
+    }
+
+    let hasNaN = false;
+    
+    computer.scene.traverse((child) => {
+      if (child.isMesh && child.geometry) {
+        const positions = child.geometry.attributes.position;
+        if (positions && positions.array) {
+          for (let i = 0; i < positions.array.length; i++) {
+            if (isNaN(positions.array[i])) {
+              hasNaN = true;
+              break;
             }
           }
         }
-        if (hasNaN) return;
-      });
-      
-      if (hasNaN) {
-        setModelError(true);
       }
-    }
-  }, [computer, modelError]);
+      if (hasNaN) return;
+    });
+    
+    return hasNaN ? null : computer;
+  }, [computer]);
 
-  if (modelError || !computer) {
+  if (!validatedModel) {
     return (
       <mesh>
+        <hemisphereLight intensity={0.15} groundColor="black" />
+        <spotLight
+          position={[-20, 50, 10]}
+          angle={0.12}
+          penumbra={1}
+          intensity={1}
+          castShadow
+          shadow-mapSize={1024}
+        />
+        <pointLight intensity={1} />
         <boxGeometry args={[2, 2, 2]} />
         <meshStandardMaterial color="#915EFF" />
       </mesh>
@@ -74,7 +83,7 @@ const Computers = () => {
       />
       <pointLight intensity={1} />
       <primitive
-        object={computer.scene}
+        object={validatedModel.scene}
         scale={0.75}
         position={[0, -3.25, -1.5]}
         rotation={[-0.01, -0.2, -0.1]}
