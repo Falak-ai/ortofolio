@@ -71,7 +71,7 @@ const services = [
     icon: creator,
   },
   {
-    title: "Ui UX Designer",
+    title: "Automation Developer",
     icon: backend,
   },
 ];
