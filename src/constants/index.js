@@ -198,7 +198,7 @@ const projects = [
   {
     name: "N8n templates",
     description:
-      "N8n templates is a web-based platform that allows users to search, explore, and purchase a wide range of products from various providers, offering a seamless and efficient shopping experience.",
+      "N8n templates is a web-based platform that allows users to search, explore, and purchase n8n templates from various providers, offering a seamless and efficient shopping experience.",
     tags: [
       {
         name: "react",
