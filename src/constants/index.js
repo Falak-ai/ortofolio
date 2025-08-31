@@ -34,6 +34,7 @@ import {
   secondTestimonial,
   thirdTestimonial,
   n8ntemplates,
+  invoiceAutomation,
 } from '../assets'
 
 export const navLinks = [
@@ -230,7 +231,7 @@ const projects = [
     description:
       "An automated workflow that generates invoices, sends payment reminders, updates accounting systems, and notifies teams—streamlining billing processes and ensuring faster, error-free revenue collection.",
     tags: [],
-    image: project3,
+    image: invoiceAutomation,
     source_code_link: null,
   },
 ];

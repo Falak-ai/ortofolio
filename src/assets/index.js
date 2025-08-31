@@ -31,6 +31,7 @@ import secondTestimonial from './image.webp';
 import thirdTestimonial from './third testimonial.webp'
 import n8ntemplates from './n8ntemplates.png';
 import falakai_logo from './falakai_logo.png';
+import invoiceAutomation from './Invoice & Payment Automation.png';
 
 export {
   logo,
@@ -56,6 +57,7 @@ export {
   framer,
   n8ntemplates,
   falakai_logo,
+  invoiceAutomation,
   figma,
   git,
   html,
