@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
-import emailjs from "@emailjs/browser";
+import { supabase } from "../lib/supabase";
 
 import { styles } from "../styles";
 import { EarthCanvas } from "./canvas";
@@ -31,37 +31,39 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
 
-    emailjs
-      .send(
-        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
-        {
-          from_name: form.name,
-          to_name: "Roko Falak",
-          from_email: form.email,
-          to_email: "roko.falak@gmail.com",
-          message: form.message,
-        },
-        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
-      )
-      .then(
-        () => {
-          setLoading(false);
-          alert("Thank you. I will get back to you as soon as possible.");
+    // Submit form data to Supabase
+    const submitToSupabase = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('contact_submissions')
+          .insert([
+            {
+              name: form.name,
+              email: form.email,
+              message: form.message,
+            }
+          ]);
 
-          setForm({
-            name: "",
-            email: "",
-            message: "",
-          });
-        },
-        (error) => {
-          setLoading(false);
-          console.error(error);
-
-          alert("Ahh, something went wrong. Please try again.");
+        if (error) {
+          throw error;
         }
-      );
+
+        setLoading(false);
+        alert("Thank you! Your message has been submitted successfully. I will get back to you as soon as possible.");
+
+        setForm({
+          name: "",
+          email: "",
+          message: "",
+        });
+      } catch (error) {
+        setLoading(false);
+        console.error('Error submitting form:', error);
+        alert("Something went wrong. Please try again or contact me directly.");
+      }
+    };
+
+    submitToSupabase();
   };
 
   return (
