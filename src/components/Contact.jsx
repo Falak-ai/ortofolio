@@ -109,7 +109,7 @@ const Contact = () => {
               name='message'
               value={form.message}
               onChange={handleChange}
-              placeholder='Tell me briefly what you need help with (e.g., website design, automation, strategy)'
+              placeholder='Tell me briefly what you need help with (e.g., website design, task automation, strategy)'
               className='bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium'
             />
           </label>
