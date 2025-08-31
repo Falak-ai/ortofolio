@@ -222,20 +222,7 @@ const projects = [
     name: "Lead Capture",
     description:
       "An automated lead capture system collects form submissions, enriches contact data, and seamlessly routes qualified leads to CRM or email marketing tools for instant follow-up and tracking.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "emailJs",
-        color: "green-text-gradient",
-      },
-      {
-        name: "Gsap",
-        color: "pink-text-gradient",
-      },
-    ],
+    tags: [],
     image: leadcapture,
   },
   {
