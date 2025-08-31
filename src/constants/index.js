@@ -226,7 +226,7 @@ const projects = [
     image: leadcapture,
   },
   {
-    name: "GoGroove-Ecommerce",
+    name: "Invoice & Payment Automation",
     description:
       "Go-Groove is your ultimate destination for premium products across various categories. Whether you're a savvy shopper or a professional, enhance, and simplify your lifestyle—all in one place!",
     tags: [
