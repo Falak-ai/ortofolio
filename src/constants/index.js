@@ -221,7 +221,7 @@ const projects = [
   {
     name: "Lead Capture",
     description:
-      "GearXpert is your ultimate destination for premium auto parts and accessories, Whether you're an automobile enthusiast or a professional, find everything you need to upgrade, repair.",
+      "An automated lead capture system collects form submissions, enriches contact data, and seamlessly routes qualified leads to CRM or email marketing tools for instant follow-up and tracking.",
     tags: [
       {
         name: "react",
