@@ -229,24 +229,7 @@ const projects = [
     name: "Invoice & Payment Automation",
     description:
       "An automated workflow that generates invoices, sends payment reminders, updates accounting systems, and notifies teams—streamlining billing processes and ensuring faster, error-free revenue collection.",
-    tags: [
-      {
-        name: "react",
-        color: "blue-text-gradient",
-      },
-      {
-        name: "express",
-        color: "white-text-gradient",
-      },
-      {
-        name: "node",
-        color: "green-text-gradient",
-      },
-      {
-        name: "mongodb",
-        color: "green-text-gradient",
-      },
-    ],
+    tags: [],
     image: project3,
     source_code_link: "https://github.com/",
   },
