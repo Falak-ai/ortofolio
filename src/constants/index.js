@@ -231,7 +231,7 @@ const projects = [
       "An automated workflow that generates invoices, sends payment reminders, updates accounting systems, and notifies teams—streamlining billing processes and ensuring faster, error-free revenue collection.",
     tags: [],
     image: project3,
-    source_code_link: "https://github.com/",
+    source_code_link: null,
   },
 ];
 
