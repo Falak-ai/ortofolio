@@ -228,7 +228,7 @@ const projects = [
   {
     name: "Invoice & Payment Automation",
     description:
-      "Go-Groove is your ultimate destination for premium products across various categories. Whether you're a savvy shopper or a professional, enhance, and simplify your lifestyle—all in one place!",
+      "An automated workflow that generates invoices, sends payment reminders, updates accounting systems, and notifies teams—streamlining billing processes and ensuring faster, error-free revenue collection.",
     tags: [
       {
         name: "react",
