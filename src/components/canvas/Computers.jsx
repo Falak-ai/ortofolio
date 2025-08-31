@@ -131,7 +131,7 @@ const Computers = () => {
       // If we found corrupted geometry, use sanitized scene, otherwise use original
       if (hasCorruptedGeometry) {
         console.warn("Corrupted geometry detected and removed from computer model");
-        setValidatedModel(sanitizedScene.children.length > 0 ? { scene: sanitizedScene } : null);
+        setValidatedModel(null);
       } else {
         setValidatedModel(computer);
       }

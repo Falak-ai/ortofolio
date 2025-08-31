@@ -10,7 +10,6 @@ import gsap from './tech/gsap.png'
 import framer from './tech/framer.png';
 import css from "./tech/css.png";
 import figma from "./tech/figma.png";
-import gearXpert from './gearXpert.png';
 import project3 from './project3.webp';
 import leadcapture from './leadcapture.png';
 import mysql from './tech/mysql.png';
@@ -42,7 +41,6 @@ export {
   menu,
   close,
   css,
-  gearXpert,
   leadcapture,
   project3,
   mysql,
